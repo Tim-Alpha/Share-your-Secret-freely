@@ -11,6 +11,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const FacebookStrategy = require('passport-facebook-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const { name } = require('ejs');
+const port = 3000;
 
 const app = express();
 
@@ -34,7 +35,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Setting up connection with mongodb at our localhost
-mongoose.connect("mongodb://127.0.0.1:27017/userDB", { useNewUrlParser: true });
+mongoose.connect("mongodb+srv://sachinkinha:Sachin1234@cluster0.ourbjr9.mongodb.net/userDB", { useNewUrlParser: true });
 
 // Creating the structure of our data-types
 const userSchema = new mongoose.Schema({
@@ -206,6 +207,4 @@ app.get('/logout', function (req, res) {
     res.redirect('/');
 });
 // Listening through the port 3000 at our localhost
-app.listen(3000, function () {
-    console.log('Server stated at port 3000.');
-});
+app.listen(process.env.PORT || port, () => console.log('Server is running at port ', port));
