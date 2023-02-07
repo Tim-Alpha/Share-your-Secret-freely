@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -24,8 +25,12 @@ mongoose.set('strictQuery', true);
 // Initialized session
 app.use(session({
     secret: "Our little secrect.",
-    resave: false,
-    saveUninitialized: false
+    saveUninitialized: false, // don't create session until something stored
+    resave: false, //don't save session if unmodified
+    store: MongoStore.create({
+      mongoUrl: process.env.DB_CONNECTION_URL,
+      touchAfter: 24 * 3600 // time period in seconds
+    })
 }));
 
 // Initialize passport
@@ -35,7 +40,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Setting up connection with mongodb at our localhost
-mongoose.connect("mongodb+srv://sachinkinha:Sachin1234@cluster0.ourbjr9.mongodb.net/userDB", { useNewUrlParser: true });
+mongoose.connect(process.env.DB_CONNECTION_URL, { useNewUrlParser: true });
+// mongodb+srv://sachinkinha:Sachin1234@cluster0.ourbjr9.mongodb.net
 
 // Creating the structure of our data-types
 const userSchema = new mongoose.Schema({
@@ -78,7 +84,7 @@ passport.serializeUser(function(user, cb) {
 passport.use(new GoogleStrategy({
     clientID: process.env.G_CLIENT_ID,
     clientSecret: process.env.G_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/secrets",
+    callbackURL: "http://secrets-i4m9.onrender.com/auth/google/secrets",
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 },
     function (accessToken, refreshToken, profile, cb) {
@@ -88,19 +94,6 @@ passport.use(new GoogleStrategy({
         });
     }
 ));
-
-//Facebook auth
-// passport.use(new FacebookStrategy({
-//     clientID: process.env.CLIENT_ID,
-//     clientSecret: process.env.F.CLIENT_SECRET,
-//     callbackURL: "http://localhost:3000/auth/facebook/secrets"
-//   },
-//   function(accessToken, refreshToken, profile, cb) {
-//     User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-//       return cb(err, user);
-//     });
-//   }
-// ));
 
 // Home route
 app.get('/', function (req, res) {
