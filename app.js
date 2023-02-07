@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+// const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -27,11 +27,12 @@ app.use(session({
     secret: "Our little secrect.",
     saveUninitialized: false, // don't create session until something stored
     resave: false, //don't save session if unmodified
-    store: MongoStore.create({
-      mongoUrl: process.env.DB_CONNECTION_URL,
-      touchAfter: 24 * 3600 // time period in seconds
-    })
 }));
+
+// store: MongoStore.create({
+//     mongoUrl: process.env.DB_CONNECTION_URL,
+//     touchAfter: 24 * 3600 // time period in seconds
+//   })
 
 // Initialize passport
 app.use(passport.initialize());
