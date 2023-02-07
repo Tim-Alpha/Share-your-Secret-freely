@@ -1,0 +1,120 @@
+
+
+
+
+
+//-------------------------------------------------------
+const bcrypt = require('bcrypt');
+const saltRound = 10;
+
+//-----------------------------------------------------
+app.post('/register', function (req, res) {
+    bcrypt.hash(req.body.password, saltRound, function (err, hash) {
+        const newUser = new User({
+            email: req.body.username,
+            password: hash
+        });
+
+        newUser.save(function (err) {
+            if (err) {
+                console.log(err);
+            } else {
+                res.render('secrets')
+            }
+        });
+    });
+
+});
+
+//-------------------------------------------------------------
+app.post('/login', function (req, res) {
+
+    const userName = req.body.username;
+    const password = req.body.password;
+
+    User.findOne({ email: userName }, function (err, foundUser) {
+        if (err) {
+            console.log(err);
+        } else {
+            if (foundUser) {
+                bcrypt.compare(password, foundUser.password, function (err, result) {
+                    if (result === true) {
+                        res.render('secrets');
+                    } else {
+                        console.log('Password not valid!');
+                    }
+                });
+            } else {
+                console.log('User not found!');
+            }
+        }
+    });
+});
+
+
+//-----------------------------------------------------------
+// To remove the application warning by third party uses.To
+
+mongoose.set('useCreateIndex', true);
+
+
+//----------------------------------------------------------------
+
+
+window.fbAsyncInit = function () {
+    FB.init({
+        appId: '{your-app-id}',
+        cookie: true,
+        xfbml: true,
+        version: '{api-version}'
+    });
+
+    FB.AppEvents.logPageView();
+
+};
+
+(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) { return; }
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+
+
+//-----------------------------------------------------------------------
+
+
+FB.getLoginStatus(function (response) {
+    statusChangeCallback(response);
+});
+
+//-----------------------------------------------------
+
+// {
+//     status: 'connected',
+//         authResponse: {
+//         accessToken: '...',
+//             expiresIn: '...',
+//                 signedRequest: '...',
+//                     userID: '...'
+//     }
+// }
+
+
+
+//-----------------------------------------------
+
+<fb:login-button
+    scope="public_profile,email"
+    onlogin="checkLoginState();">
+</fb:login-button>
+
+//-----------------------------------
+
+function checkLoginState() {
+    FB.getLoginStatus(function (response) {
+        statusChangeCallback(response);
+    });
+}
+  //--------------------------------------------
