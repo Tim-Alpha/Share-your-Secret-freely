@@ -41,7 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Setting up connection with mongodb at our localhost
-mongoose.connect(process.env.DB_CONNECTION_URL, { useNewUrlParser: true });
+mongoose.connect(""+process.env.DB_CONNECTION_URL+"", { useNewUrlParser: true });
 // mongodb+srv://sachinkinha:Sachin1234@cluster0.ourbjr9.mongodb.net
 
 // Creating the structure of our data-types
